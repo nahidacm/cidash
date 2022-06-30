@@ -3,6 +3,7 @@ import { Breadcrumb, Layout, Menu } from 'antd';
 import { useState } from 'react';
 import styles from '../styles/Template.module.less'
 const { Header, Content, Footer, Sider } = Layout;
+import { useRouter } from 'next/router';
 
 function getItem(label, key, icon, children) {
   return {
@@ -14,19 +15,28 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem('Option 1', '1', <PieChartOutlined />),
-  getItem('Option 2', '2', <DesktopOutlined />),
-  getItem('User', 'sub1', <UserOutlined />, [
-    getItem('Tom', '3'),
-    getItem('Bill', '4'),
-    getItem('Alex', '5'),
+  getItem('Project', '1', <PieChartOutlined />, [
+    getItem('Add New', 'project/new'),
+    getItem('Projects', '3'),
   ]),
-  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-  getItem('Files', '9', <FileDoneOutlined />),
+  getItem('Option 2', '4', <DesktopOutlined />),
+  getItem('User', 'sub1', <UserOutlined />, [
+    getItem('Tom', '5'),
+    getItem('Bill', '6'),
+    getItem('Alex', '7'),
+  ]),
+  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '8'), getItem('Team 2', '9')]),
+  getItem('Files', '10', <FileDoneOutlined />),
 ];
 
 const Template = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const router = useRouter();
+  const onClick = (e) => {
+    console.log('click ', e);
+    router.push(e.key);
+  };
+  
   return (
     <Layout
       style={{
@@ -40,6 +50,7 @@ const Template = ({ children }) => {
       >
         <div className={styles.logo} />
         <Menu
+          onClick={onClick}
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
