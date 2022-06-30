@@ -1,5 +1,5 @@
 import { PieChartOutlined, UserOutlined, DesktopOutlined, TeamOutlined, FileDoneOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu } from 'antd';
+import { PageHeader, Layout, Menu } from 'antd';
 import { useState } from 'react';
 import styles from '../styles/Template.module.less'
 const { Header, Content, Footer, Sider } = Layout;
@@ -59,11 +59,19 @@ const Template = ({ children }) => {
       </Sider>
       <Layout className="site-layout">
         <Header
-          className="site-layout-background"
+          className="site-layout-header"
           style={{
-            padding: 0
+            padding: 0,
+            background: "#dedede"
           }}
-        />
+        >
+          <PageHeader
+            className="site-page-header"
+            onBack={() => null}
+            title="Title"
+            subTitle="This is a subtitle"
+          />
+        </Header>
         <Content
           style={{
             margin: "0 16px"
