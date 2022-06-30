@@ -1,5 +1,4 @@
-An ideal setup of NextJS with and and less.
-Purpose of this demo is to setup an customizable theme for NextJS
+DevOps toolbox to manage projects and CI/CD etc.
 
 ## Start mongodb server
 `docker-compose up` or `docker-compose up -d`
