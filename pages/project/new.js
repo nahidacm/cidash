@@ -24,7 +24,18 @@ const validateMessages = {
 /* eslint-enable no-template-curly-in-string */
 
 export default function NewProject() {
+
+  const insertProject = async (values) => {
+    // console.log(JSON.stringify(values));
+
+    const res = await fetch('http://localhost:3000/api/project', {
+      method: 'post',
+      body: JSON.stringify(values)
+    })
+  }
+
   const onFinish = (values) => {
+    insertProject(values);
     console.log(values);
   };
 

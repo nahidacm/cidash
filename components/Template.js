@@ -16,7 +16,7 @@ function getItem(label, key, icon, children) {
 
 const items = [
   getItem('Project', '1', <PieChartOutlined />, [
-    getItem('Add New', 'project/new'),
+    getItem('Add New', '/project/new'),
     getItem('Projects', '3'),
   ]),
   getItem('Option 2', '4', <DesktopOutlined />),
