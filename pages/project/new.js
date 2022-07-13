@@ -38,7 +38,7 @@ export default function NewProject() {
           validateMessages={validateMessages}
         >
           <Form.Item
-            name={["user", "name"]}
+            name="name"
             label="Name"
             rules={[
               {
@@ -49,7 +49,7 @@ export default function NewProject() {
             <Input />
           </Form.Item>
           
-          <Form.Item name={["user", "introduction"]} label="Description">
+          <Form.Item name="introduction" label="Description">
             <Input.TextArea />
           </Form.Item>
           <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
