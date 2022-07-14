@@ -1,5 +1,5 @@
-import React from "react";
-import { useRouter } from 'next/router';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { Button, Form, Input, message, Col, Row, Space } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 const layout = {
@@ -26,30 +26,49 @@ const validateMessages = {
 /* eslint-enable no-template-curly-in-string */
 
 export default function EditProject() {
+  const router = useRouter();
+  const { id } = router.query;
 
-    const router = useRouter()
-  const { pid } = router.query
+  const [project, setProject] = useState(null);
 
-  const addProject = async (values) => {
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (router.isReady) {
+
+        fetch(process.env.NEXT_PUBLIC_BASE_URL+'/api/projects/'+id, {method: 'GET'})
+        .then((res) => res.json())
+        .then((project) => {
+          setProject(project)
+
+          form.setFieldsValue(project);
+          
+        //   setLoading(false)
+        })
+
+    }
+}, [router.isReady])
+
+  const updateProject = async (values) => {
     const key = "updatable";
     message.loading({
       content: "Saving...",
       key,
     });
-    const res = await fetch("http://localhost:3000/api/projects", {
-      method: "POST",
+    const res = await fetch("http://localhost:3000/api/projects/" + id, {
+      method: "PATCH",
       body: JSON.stringify(values),
     });
 
     message.success({
-      content: "Saved Successfully!",
+      content: "Updated Successfully!",
       key,
       duration: 2,
     });
   };
 
   const onFinish = (values) => {
-    addProject(values);
+    updateProject(values);
     console.log(values);
   };
 
@@ -58,9 +77,10 @@ export default function EditProject() {
       <Col xs={24} sm={24} md={18} lg={16} xl={12}>
         <Form
           {...layout}
-          name="nest-messages"
+          name="project-form"
           onFinish={onFinish}
           validateMessages={validateMessages}
+          form={form}
         >
           <Form.Item
             name="name"
@@ -74,7 +94,7 @@ export default function EditProject() {
             <Input />
           </Form.Item>
 
-          <Form.Item name="introduction" label="Description">
+          <Form.Item name="description" label="Description">
             <Input.TextArea />
           </Form.Item>
 

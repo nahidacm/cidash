@@ -25,6 +25,7 @@ const validateMessages = {
 /* eslint-enable no-template-curly-in-string */
 
 export default function NewProject() {
+  
   const addProject = async (values) => {
     const key = "updatable";
     message.loading({
@@ -69,7 +70,7 @@ export default function NewProject() {
             <Input />
           </Form.Item>
 
-          <Form.Item name="introduction" label="Description">
+          <Form.Item name="description" label="Description">
             <Input.TextArea />
           </Form.Item>
 

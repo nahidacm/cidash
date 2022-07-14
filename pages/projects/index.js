@@ -42,7 +42,7 @@ export default function projects() {
             event.stopPropagation();
         }}
         />
-        <Button type="text" href={`/project/edit/`+item._id} icon={<EditOutlined />} />
+        <Button type="text" href={`/projects/edit?id=`+item._id} icon={<EditOutlined />} />
     </>
   );
 
@@ -53,7 +53,7 @@ export default function projects() {
         {
             projects.map((item, index)=>{
                 return <Panel header={item.name} key={index} extra={genExtra(item)}>
-                <div>{item.introduction}</div>
+                <div>{item.description}</div>
               </Panel>
             })
         }
