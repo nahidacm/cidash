@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/router';
 import { Button, Form, Input, message, Col, Row, Space } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 const layout = {
@@ -24,7 +25,23 @@ const validateMessages = {
 };
 /* eslint-enable no-template-curly-in-string */
 
-export default function NewProject() {
+export default function EditProject() {
+
+  const [project, setProject] = useState(null);
+
+  const router = useRouter()
+  const { project_id } = router.query
+
+  useEffect(() => {
+    fetch('/api/project/'+project_id, {method: 'GET'})
+    .then((res) => res.json())
+    .then((project) => {
+      setProject(project)
+    //   setLoading(false)
+    })
+
+}, [])
+
   const addProject = async (values) => {
     const key = "updatable";
     message.loading({
@@ -32,7 +49,7 @@ export default function NewProject() {
       key,
     });
     const res = await fetch("http://localhost:3000/api/project", {
-      method: "post",
+      method: "POST",
       body: JSON.stringify(values),
     });
 
