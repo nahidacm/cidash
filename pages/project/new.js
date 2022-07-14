@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Form, Input, InputNumber, Col, Row } from "antd";
+import { Button, Form, Input, message, Col, Row, Space } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 const layout = {
   labelCol: {
     span: 8,
@@ -24,18 +25,26 @@ const validateMessages = {
 /* eslint-enable no-template-curly-in-string */
 
 export default function NewProject() {
+  const addProject = async (values) => {
+    const key = "updatable";
+    message.loading({
+      content: "Saving...",
+      key,
+    });
+    const res = await fetch("http://localhost:3000/api/project", {
+      method: "post",
+      body: JSON.stringify(values),
+    });
 
-  const insertProject = async (values) => {
-    // console.log(JSON.stringify(values));
-
-    const res = await fetch('http://localhost:3000/api/project', {
-      method: 'post',
-      body: JSON.stringify(values)
-    })
-  }
+    message.success({
+      content: "Saved Successfully!",
+      key,
+      duration: 2,
+    });
+  };
 
   const onFinish = (values) => {
-    insertProject(values);
+    addProject(values);
     console.log(values);
   };
 
@@ -59,10 +68,64 @@ export default function NewProject() {
           >
             <Input />
           </Form.Item>
-          
+
           <Form.Item name="introduction" label="Description">
             <Input.TextArea />
           </Form.Item>
+
+          <Form.List name="steps">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restField }) => (
+                  <Space
+                    key={key}
+                    style={{
+                      display: "flex",
+                      marginBottom: 8,
+                    }}
+                    align="baseline"
+                  >
+                    <Form.Item
+                      {...restField}
+                      name={[name, "step_title"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Missing step title",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Step Title" />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, "command"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Missing command",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Command" />
+                    </Form.Item>
+                    <MinusCircleOutlined onClick={() => remove(name)} />
+                  </Space>
+                ))}
+                <Form.Item>
+                  <Button
+                    type="dashed"
+                    onClick={() => add()}
+                    block
+                    icon={<PlusOutlined />}
+                  >
+                    Add Step
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+
           <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
             <Button type="primary" htmlType="submit">
               Submit
