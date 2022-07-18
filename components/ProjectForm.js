@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Space } from "antd";
 const layout = {

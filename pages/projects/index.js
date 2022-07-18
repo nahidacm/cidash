@@ -19,7 +19,7 @@ const text = `
   it can be found as a welcome guest in many households across the world.
 `;
 
-export default function projects() {
+export default function Projects() {
 
     const [projects, setProjects] = useState([]);
 
