@@ -52,7 +52,7 @@ export default function Projects() {
                     {projects.map((item, index) => {
                         return (
                             <Panel
-                                header={item.name}
+                                header={<h4>{item.name}</h4>}
                                 key={index}
                                 extra={genExtra(item)}
                             >
