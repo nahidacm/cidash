@@ -6,17 +6,18 @@ import {
     FileDoneOutlined,
 } from "@ant-design/icons";
 import { PageHeader, Layout, Menu } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../styles/Template.module.less";
 const { Header, Content, Footer, Sider } = Layout;
 import { useRouter } from "next/router";
 
 function getItem(label, key, icon, children) {
     return {
+        label,
         key,
+        title : label,
         icon,
         children,
-        label,
     };
 }
 
@@ -38,13 +39,29 @@ const items = [
     getItem("Files", "10", <FileDoneOutlined />),
 ];
 
+
 const Template = ({ children }) => {
     const [collapsed, setCollapsed] = useState(false);
+    const [headerTitle, setHeaderTitle] = useState('');
     const router = useRouter();
-    const onClick = (e) => {
-        console.log("click ", e);
-        router.push(e.key);
+    const {pathname} = router;
+
+    useEffect(() => {
+      // Set title when first load and on home (/)
+      if(pathname === '/') {
+        setHeaderTitle("Dashboard");
+      }
+    }, [pathname]);
+
+    const onClick = ({ item, key, keyPath, domEvent }) => {
+      router.push(key);
+      setHeaderTitle(item?.props?.title);
     };
+
+    const goBack = () => {
+      router.push("/");
+      setHeaderTitle("Dashboard");
+    }
 
     return (
         <Layout
@@ -76,9 +93,8 @@ const Template = ({ children }) => {
                 >
                     <PageHeader
                         className="site-page-header"
-                        onBack={() => null}
-                        title="Title"
-                        subTitle="This is a subtitle"
+                        onBack={() => goBack()}
+                        title={headerTitle}
                     />
                 </Header>
                 <Content
