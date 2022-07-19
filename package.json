@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "run_terminal": "cd pages/api/terminal && nodemon index.js",
+    "start_all": "yarn dev && yarn run_terminal"
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
@@ -19,11 +21,13 @@
     "node-pty": "^0.10.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "socket.io": "^4.5.1"
+    "socket.io": "^4.5.1",
+    "socket.io-client": "^4.5.1"
   },
   "devDependencies": {
     "eslint": "8.18.0",
     "eslint-config-next": "12.1.6",
     "nodemon": "^2.0.19"
-  }
+  },
+  "type": "module"
 }

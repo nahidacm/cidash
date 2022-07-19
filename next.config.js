@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-const withLess = require("next-with-less");
+import withLess from "next-with-less";
 
 const nextConfig = {
   reactStrictMode: true,
@@ -16,4 +16,4 @@ const nextConfig = {
   })
 }
 
-module.exports = nextConfig
+export default nextConfig;
