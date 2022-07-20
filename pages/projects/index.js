@@ -36,17 +36,22 @@ export default function Projects() {
             });
     }, []);
 
-    const executeCommands = (event) => {
+    const executeCommands = (event, steps) => {
         console.log('event: ', event);
         // event.preventDefault();
 
-        socket.emit('input-change', "test")
+        steps && steps?.forEach((stepItem, index) => {
+            socket.emit('command-input', stepItem?.command);
+        });
     }
 
-    const genExtra = (item) => (
-        <>
+    const genExtra = (item) => {
+        let steps = item?.steps && item?.steps?.length>0 ? item?.steps : null;
+
+        return(
+            <>
             <PlaySquareOutlined
-                onClick={(event) => executeCommands(event)}
+                onClick={(event) => executeCommands(event, steps)}
             />
             <Button
                 type="text"
@@ -54,7 +59,8 @@ export default function Projects() {
                 icon={<EditOutlined />}
             />
         </>
-    );
+        );
+    }
 
     return (
         <Row justify="center">

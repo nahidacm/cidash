@@ -1,26 +1,41 @@
-import styles from "../styles/Home.module.less";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import io from 'socket.io-client';
-let socket;
+let socket = io();
 
 const Home = () => {
+  // States
+  const [socketConnected, setSocketConnected] = useState(false);
+
+  const turnSocketOn = async () => {
+      let response = await fetch("/api/socket");
+
+      if (response?.status === 200) {
+          setSocketConnected(true);
+      }
+  };
+
+  const turnOnPTYProcess = async() => {
+    let response = await fetch("/api/pty");
+  }
 
   useEffect(() => {
-    socketInitializer();
+      // Turn socket connection on on first page load
+      turnSocketOn();
+      // turnOnPTYProcess();
   }, []);
 
-  const socketInitializer = async () => {
-    await fetch('/api/socket')
-    socket = io()
+  useEffect(() => {
+      if (socketConnected) {
+          socket.on("connect", () => {
+              console.log("connected");
+          });
 
-    socket.on('connect', () => {
-      console.log('connected')
-    });
+          socket.on("command-output", (msg) => {
+              console.log("command-output: ", msg);
+          });
+      }
+  }, [socketConnected]);
 
-    socket.on('update-input', msg => {
-      console.log("msg: ", msg);
-    });
-  }
 
   return (
     <div
