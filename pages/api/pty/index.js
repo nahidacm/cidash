@@ -17,7 +17,7 @@ const PTYHandler = (req, res) => {
       ptyProcess.on('data', function(data) {
         console.log('pty after on data: ', data);
         
-        process.stdout.write(data);
+        // process.stdout.write(data);
       });
     
 }

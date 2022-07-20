@@ -33,6 +33,10 @@ const Home = () => {
           socket.on("command-output", (msg) => {
               console.log("command-output: ", msg);
           });
+
+          // socket.on("terminal-object", (object) => {
+          //     console.log("terminal-object: ", object);
+          // });
       }
   }, [socketConnected]);
 
