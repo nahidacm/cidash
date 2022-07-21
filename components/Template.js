@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
     PieChartOutlined,
     UserOutlined,
@@ -6,10 +7,10 @@ import {
     FileDoneOutlined,
 } from "@ant-design/icons";
 import { PageHeader, Layout, Menu } from "antd";
-import { useEffect, useState } from "react";
 import styles from "../styles/Template.module.less";
-const { Header, Content, Footer, Sider } = Layout;
 import { useRouter } from "next/router";
+import io from 'socket.io-client';
+
 
 function getItem(label, key, icon, children) {
     return {
@@ -41,10 +42,46 @@ const items = [
 
 
 const Template = ({ children }) => {
+    // States
     const [collapsed, setCollapsed] = useState(false);
     const [headerTitle, setHeaderTitle] = useState('');
+    const [socketConnected, setSocketConnected] = useState(false);
+    
+    // Router
     const router = useRouter();
     const {pathname} = router;
+
+    // Antd Constants
+    const { Header, Content, Footer, Sider } = Layout;
+
+    // Socket
+    let socket = io();
+
+    const turnSocketOn = async () => {
+        let response = await fetch("/api/socket");
+  
+        if (response?.status === 200) {
+            setSocketConnected(true);
+        }
+    };
+
+    useEffect(() => {
+        // Turn socket connection on on first page load
+        turnSocketOn();
+    }, []);
+
+    useEffect(() => {
+        if (socketConnected) {
+            socket.on("connect", () => {
+                console.log("connected");
+            });
+  
+            socket.on("command-output", (msg) => {
+                console.log("command-output: ", msg);
+            });
+        }
+    }, [socketConnected]);
+  
 
     useEffect(() => {
       // Set title when first load and on home (/)

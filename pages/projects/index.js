@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Button,
   Form,
@@ -13,7 +13,6 @@ import {
 import { MinusCircleOutlined, PlusOutlined, PlaySquareOutlined, EditOutlined } from "@ant-design/icons";
 import io from 'socket.io-client';
 
-
 export default function Projects() {
     // States
     const [projects, setProjects] = useState([]);
@@ -24,6 +23,7 @@ export default function Projects() {
 
     // Other
     let socket = io();
+
 
     useEffect(() => {
         fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/projects", {

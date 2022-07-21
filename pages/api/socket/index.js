@@ -1,34 +1,12 @@
 import { Server } from "socket.io";
-import os from 'os';
-import pty from 'node-pty';
+import executeCommands from 'child-process-es6-promise';
 let io;
-
-var shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
-
-var ptyProcess = pty.spawn(shell, [], {
-    name: 'xterm-color',
-    cols: 80,
-    rows: 30,
-    cwd: process.env.HOME,
-    env: process.env
-  });
-
-  ptyProcess.on('data', function(data) {
-    console.log('data on pty process: ', typeof data);
-    
-    process.stdout.write(data);
-
-    // io.on("connection", (socket) => {
-    //     socket.broadcast.emit("terminal-object", data);
-    // });
-  });
-
-  ptyProcess.on('exit', (code, signal) => console.log('return code was:', code));
-
 
 const SocketHandler = (req, res) => {
     if (res.socket.server.io) {
         console.log("Socket is already running");
+        res.end();
+
     } else {
         console.log("Socket is initializing");
         io = new Server(res.socket.server);
@@ -38,14 +16,20 @@ const SocketHandler = (req, res) => {
         res.end();
 
         io.on("connection", (socket) => {
-            socket.on("command-input", (msg) => {
-                console.log("command-input: ", msg);
-                ptyProcess.write(`${msg}\r`);
-                // ptyProcess.write("ls -la\r");
-                // ptyProcess.resize(100, 40);
-                // ptyProcess.write("ls\r");
-
-                socket.broadcast.emit("command-output", msg);
+            socket.on("command-input", (command) => {
+                console.log("command-input: ", command);
+                // ptyProcess.write(`${msg}\r`);
+                executeCommands.spawn(command, [], {})
+                    .then((result) => {
+                        if(result?.stdout) {
+                            console.log('result: ', result);
+                            socket.broadcast.emit("command-output", `command success: ${command}`);
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('Error: ', `${error?.syscall} ${error?.code}`);
+                        socket.broadcast.emit("command-output", `command failed: ${error?.syscall} ${error?.code}`);
+                    });
             });
         });
     }
