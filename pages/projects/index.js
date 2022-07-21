@@ -12,6 +12,8 @@ import {
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined, PlaySquareOutlined, EditOutlined } from "@ant-design/icons";
 import io from 'socket.io-client';
+import { useRouter } from 'next/router'
+
 
 export default function Projects() {
     // States
@@ -23,6 +25,9 @@ export default function Projects() {
 
     // Other
     let socket = io();
+
+    // Router
+    const router = useRouter();
 
 
     useEffect(() => {
@@ -45,17 +50,23 @@ export default function Projects() {
         });
     }
 
+    const openProjectDetails = (projectId) => {
+        router.push(`/projects/details/${projectId}`);
+    }
+
     const genExtra = (item) => {
+        console.log('item: ', item);
+        
         let steps = item?.steps && item?.steps?.length>0 ? item?.steps : null;
 
         return(
             <>
             <PlaySquareOutlined
-                onClick={(event) => executeCommands(event, steps)}
+                onClick={() => openProjectDetails(item._id)}
             />
             <Button
                 type="text"
-                href={`/projects/edit?id=` + item._id}
+                href={`/projects/edit/` + item._id}
                 icon={<EditOutlined />}
             />
         </>

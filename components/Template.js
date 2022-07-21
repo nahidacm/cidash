@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext, Children, isValidElement, cloneElement } from "react";
 import {
     PieChartOutlined,
     UserOutlined,
@@ -10,6 +10,7 @@ import { PageHeader, Layout, Menu } from "antd";
 import styles from "../styles/Template.module.less";
 import { useRouter } from "next/router";
 import io from 'socket.io-client';
+// import { SocketResultContext } from '../contexts/SocketResultContext';
 
 
 function getItem(label, key, icon, children) {
@@ -46,6 +47,7 @@ const Template = ({ children }) => {
     const [collapsed, setCollapsed] = useState(false);
     const [headerTitle, setHeaderTitle] = useState('');
     const [socketConnected, setSocketConnected] = useState(false);
+    const [stepResults, setStepResults] = useState([]);
     
     // Router
     const router = useRouter();
@@ -56,6 +58,9 @@ const Template = ({ children }) => {
 
     // Socket
     let socket = io();
+
+    // Contexts
+    // const { pushResultData } = useContext(SocketResultContext);
 
     const turnSocketOn = async () => {
         let response = await fetch("/api/socket");
@@ -78,8 +83,16 @@ const Template = ({ children }) => {
   
             socket.on("command-output", (msg) => {
                 console.log("command-output: ", msg);
+                let stepsResultCopy = [...stepResults];
+                stepsResultCopy.push(msg);
+                setStepResults(stepsResultCopy);
             });
         }
+
+        return(() => {
+            setStepResults([]);
+        });
+
     }, [socketConnected]);
   
 
@@ -99,6 +112,17 @@ const Template = ({ children }) => {
       router.push("/");
       setHeaderTitle("Dashboard");
     }
+
+    const resetStepResults = () => {
+        setStepResults([]);
+    }
+
+    const childrenWithProps = Children.map(children, child => {
+        if(isValidElement(child)) {
+            return cloneElement(child, {stepResults, resetStepResults});
+        }
+        return child;
+    });
 
     return (
         <Layout
@@ -146,7 +170,7 @@ const Template = ({ children }) => {
                             minHeight: 360,
                         }}
                     >
-                        {children}
+                        {childrenWithProps}
                     </div>
                 </Content>
                 <Footer

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Button, Form, Input, message, Col, Row, Space } from "antd";
-import ProjectForm from "../../components/ProjectForm";
+import ProjectForm from "../../../components/ProjectForm";
 
 export default function EditProject() {
     // States
@@ -9,14 +9,14 @@ export default function EditProject() {
 
     // Router
     const router = useRouter();
-    const { id } = router.query;
+    const { projectid } = router.query;
 
     // Antd Constants
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (router.isReady) {
-            fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/projects/" + id, {
+            fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/projects/" + projectid, {
                 method: "GET",
             })
                 .then((res) => res.json())
@@ -24,8 +24,6 @@ export default function EditProject() {
                     setProject(project);
 
                     form.setFieldsValue(project);
-
-                    //   setLoading(false)
                 });
         }
     }, [router.isReady]);
