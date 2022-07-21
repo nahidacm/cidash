@@ -11,12 +11,19 @@ import {
   Select,
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined, PlaySquareOutlined, EditOutlined } from "@ant-design/icons";
-const { Panel } = Collapse;
-const { Option } = Select;
+import io from 'socket.io-client';
+
 
 export default function Projects() {
     // States
     const [projects, setProjects] = useState([]);
+
+    // Antd Constants
+    const { Panel } = Collapse;
+    const { Option } = Select;
+
+    // Other
+    let socket = io();
 
     useEffect(() => {
         fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/projects", {
@@ -29,13 +36,22 @@ export default function Projects() {
             });
     }, []);
 
-    const genExtra = (item) => (
-        <>
+    const executeCommands = (event, steps) => {
+        console.log('event: ', event);
+        // event.preventDefault();
+
+        steps && steps?.forEach((stepItem, index) => {
+            socket.emit('command-input', stepItem?.command);
+        });
+    }
+
+    const genExtra = (item) => {
+        let steps = item?.steps && item?.steps?.length>0 ? item?.steps : null;
+
+        return(
+            <>
             <PlaySquareOutlined
-                onClick={(event) => {
-                    // If you don't want click extra trigger collapse, you can prevent this:
-                    event.stopPropagation();
-                }}
+                onClick={(event) => executeCommands(event, steps)}
             />
             <Button
                 type="text"
@@ -43,7 +59,8 @@ export default function Projects() {
                 icon={<EditOutlined />}
             />
         </>
-    );
+        );
+    }
 
     return (
         <Row justify="center">

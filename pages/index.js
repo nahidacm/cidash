@@ -1,6 +1,46 @@
-import styles from "../styles/Home.module.less";
+import { useEffect, useState } from "react";
+import io from 'socket.io-client';
+let socket = io();
 
 const Home = () => {
+  // States
+  const [socketConnected, setSocketConnected] = useState(false);
+
+  const turnSocketOn = async () => {
+      let response = await fetch("/api/socket");
+
+      if (response?.status === 200) {
+          setSocketConnected(true);
+      }
+  };
+
+  const turnOnPTYProcess = async() => {
+    let response = await fetch("/api/pty");
+  }
+
+  useEffect(() => {
+      // Turn socket connection on on first page load
+      turnSocketOn();
+      // turnOnPTYProcess();
+  }, []);
+
+  useEffect(() => {
+      if (socketConnected) {
+          socket.on("connect", () => {
+              console.log("connected");
+          });
+
+          socket.on("command-output", (msg) => {
+              console.log("command-output: ", msg);
+          });
+
+          // socket.on("terminal-object", (object) => {
+          //     console.log("terminal-object: ", object);
+          // });
+      }
+  }, [socketConnected]);
+
+
   return (
     <div
       className="site-layout-background"
