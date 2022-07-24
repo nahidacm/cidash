@@ -11,7 +11,6 @@ import {
   Select,
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined, PlaySquareOutlined, EditOutlined } from "@ant-design/icons";
-import io from 'socket.io-client';
 import { useRouter } from 'next/router'
 
 
@@ -22,9 +21,6 @@ export default function Projects() {
     // Antd Constants
     const { Panel } = Collapse;
     const { Option } = Select;
-
-    // Other
-    let socket = io();
 
     // Router
     const router = useRouter();
@@ -37,18 +33,8 @@ export default function Projects() {
             .then((res) => res.json())
             .then((projects) => {
                 setProjects(projects);
-                //   setLoading(false)
             });
     }, []);
-
-    const executeCommands = (event, steps) => {
-        console.log('event: ', event);
-        // event.preventDefault();
-
-        steps && steps?.forEach((stepItem, index) => {
-            socket.emit('command-input', stepItem?.command);
-        });
-    }
 
     const openProjectDetails = (projectId) => {
         router.push(`/projects/details/${projectId}`);

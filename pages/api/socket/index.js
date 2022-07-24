@@ -23,12 +23,12 @@ const SocketHandler = (req, res) => {
                     .then((result) => {
                         if(result?.stdout) {
                             console.log('result: ', result);
-                            socket.broadcast.emit("command-output", `command success: ${command}`);
+                            socket.broadcast.emit("command-output", {status: 'success', command: command, output: result?.stdout});
                         }
                     })
                     .catch((error) => {
                         console.log('Error: ', `${error?.syscall} ${error?.code}`);
-                        socket.broadcast.emit("command-output", `command failed: ${error?.syscall} ${error?.code}`);
+                        socket.broadcast.emit("command-output", {status: 'failed', command: command, output: null, errorText: `${error?.syscall} ${error?.code}`});
                     });
             });
         });

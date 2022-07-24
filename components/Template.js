@@ -47,7 +47,7 @@ const Template = ({ children }) => {
     const [collapsed, setCollapsed] = useState(false);
     const [headerTitle, setHeaderTitle] = useState('');
     const [socketConnected, setSocketConnected] = useState(false);
-    const [stepResults, setStepResults] = useState([]);
+    const [stepResults, setStepResults] = useState(null);
     
     // Router
     const router = useRouter();
@@ -59,8 +59,6 @@ const Template = ({ children }) => {
     // Socket
     let socket = io();
 
-    // Contexts
-    // const { pushResultData } = useContext(SocketResultContext);
 
     const turnSocketOn = async () => {
         let response = await fetch("/api/socket");
@@ -83,15 +81,13 @@ const Template = ({ children }) => {
   
             socket.on("command-output", (msg) => {
                 console.log("command-output: ", msg);
-                let stepsResultCopy = [...stepResults];
-                stepsResultCopy.push(msg);
-                setStepResults(stepsResultCopy);
+                setStepResults(msg);
             });
         }
 
-        return(() => {
-            setStepResults([]);
-        });
+        // return(() => {
+        //     setStepResults([]);
+        // });
 
     }, [socketConnected]);
   
@@ -114,7 +110,7 @@ const Template = ({ children }) => {
     }
 
     const resetStepResults = () => {
-        setStepResults([]);
+        setStepResults(null);
     }
 
     const childrenWithProps = Children.map(children, child => {

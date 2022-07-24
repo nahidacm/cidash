@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { CaretRightOutlined } from '@ant-design/icons';
 import io from 'socket.io-client';
+import { Steps } from 'antd';
 
 const ProjectDetails = (props) => {
     // Props
@@ -9,6 +10,9 @@ const ProjectDetails = (props) => {
 
     // States
     const [projectData, setProjectData] = useState(null);
+    const [startExecute, setStartExecute] = useState(false);
+    const [steps, setSteps] = useState(null);
+    const [stepReturnItems, setStepReturnItems] = useState([]);
 
     // Router
     const router = useRouter();
@@ -17,9 +21,9 @@ const ProjectDetails = (props) => {
     // Other Constants
     let socket = io();
 
-    console.log('projectid: ', projectid);
-    console.log('stepResults prop child: ', stepResults);
-    
+    // Antd Constants
+    const { Step } = Steps;
+
 
     useEffect(() => {
         fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/projects/" + projectid, {
@@ -29,10 +33,6 @@ const ProjectDetails = (props) => {
             .then((response) => {
                 console.log('response: ', response);
                 setProjectData(response);
-                
-                // setProject(project);
-
-                // form.setFieldsValue(project);
             });
     }, [projectid]);
 
@@ -40,27 +40,81 @@ const ProjectDetails = (props) => {
         resetStepResults();
     }, []);
 
-    const executeCommands = () => {
-        // event.preventDefault();
-        const steps = projectData?.steps && projectData?.steps?.length>0 ? projectData?.steps : null;
+    useEffect(() => {
+        if(projectData) {
+            setSteps(projectData?.steps && projectData?.steps?.length>0 ? projectData?.steps : null);
+        }
+    }, [projectData]);
 
-        console.log('steps: ', steps);
+    const executeCommands = () => {
+        setStartExecute(true);
+    }
+
+    useEffect(() => {
+        if(steps && startExecute) {
+            if(!stepResults) {
+                let poppedFirstElement = steps.shift();
+                if(poppedFirstElement) {
+                    socket.emit('command-input', poppedFirstElement?.command);
+                }
+            }
+            else {
+                if(stepResults?.status === 'success') {
+                    let poppedFirstElement = steps.shift();
+                    if(poppedFirstElement) {
+                        socket.emit('command-input', poppedFirstElement?.command);
+                    }
+                }
+                else {
+                    return;
+                }
+            }
+        }
         
-        steps && steps?.forEach((stepItem, index) => {
-            socket.emit('command-input', stepItem?.command);
-        });
+    }, [startExecute, stepResults, steps]);
+
+    useEffect(() => {
+        if(stepResults) {
+            let stepReturnItemsCopy = [...stepReturnItems];
+            stepReturnItemsCopy.push(stepResults);
+            setStepReturnItems(stepReturnItemsCopy);
+        }
+    }, [stepResults]);
+
+    const returnStepTitle = (status) => {
+        if(status === 'success') {
+            return 'Finished';
+        }
+        else if(status === 'failed') {
+            return 'Failed'
+        }
     }
 
     return (
         <>
             <div>Project Details</div>
-            <CaretRightOutlined 
-                onClick={executeCommands}
-            />
-            {stepResults && stepResults.map((resultItem, index) => {
-                {console.log("resultItem: ", resultItem)}
-                return(<div key={index}>{resultItem}</div>)
-            })}
+            <CaretRightOutlined onClick={executeCommands} />
+            <Steps direction="vertical" current={1}>
+                {Array.isArray(stepReturnItems) &&
+                    stepReturnItems?.length > 0 &&
+                    stepReturnItems?.map((item, index) => {
+                        return (
+                            <Step
+                                key={index}
+                                title={returnStepTitle(item?.status)}
+                                description={item?.command}
+                                status={
+                                    returnStepTitle(item?.status) === "Finished"
+                                        ? "finish"
+                                        : returnStepTitle(item?.status) ===
+                                          "Failed"
+                                        ? "error"
+                                        : null
+                                }
+                            />
+                        );
+                    })}
+            </Steps>
         </>
     );
 }

@@ -35,7 +35,7 @@ export default function EditProject() {
             key,
         });
 
-        const res = await fetch("http://localhost:3000/api/projects/" + id, {
+        const res = await fetch("http://localhost:3000/api/projects/" + projectid, {
             method: "PATCH",
             body: JSON.stringify(values),
         });
