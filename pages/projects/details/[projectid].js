@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Steps, Row, Col, Card, Button } from "antd";
+import { Steps, Row, Col, Card, Button, Timeline } from "antd";
 import { CaretRightOutlined } from '@ant-design/icons';
 import io from 'socket.io-client';
 
@@ -125,29 +125,49 @@ const ProjectDetails = (props) => {
                     style={{ width: "100%", marginBottom: "2%" }}
                 >
                     <p>{projectData?.description}</p>
-                    <Steps direction="vertical" current={1}>
-                        {Array.isArray(stepReturnItems) &&
-                            stepReturnItems?.length > 0 &&
-                            stepReturnItems?.map((item, index) => {
-                                return (
-                                    <Step
-                                        key={index}
-                                        title={returnStepTitle(item?.status)}
-                                        description={item?.command}
-                                        status={
-                                            returnStepTitle(item?.status) ===
-                                            "Finished"
-                                                ? "finish"
-                                                : returnStepTitle(
-                                                      item?.status
-                                                  ) === "Failed"
-                                                ? "error"
-                                                : null
-                                        }
-                                    />
-                                );
-                            })}
-                    </Steps>
+                    <Row>
+                        <Col span={12}>
+                            <Steps direction="vertical" current={1}>
+                                {Array.isArray(stepReturnItems) &&
+                                    stepReturnItems?.length > 0 &&
+                                    stepReturnItems?.map((item, index) => {
+                                        return (
+                                            <Step
+                                                key={index}
+                                                title={returnStepTitle(
+                                                    item?.status
+                                                )}
+                                                description={item?.command}
+                                                status={
+                                                    returnStepTitle(
+                                                        item?.status
+                                                    ) === "Finished"
+                                                        ? "finish"
+                                                        : returnStepTitle(
+                                                              item?.status
+                                                          ) === "Failed"
+                                                        ? "error"
+                                                        : null
+                                                }
+                                            />
+                                        );
+                                    })}
+                            </Steps>
+                        </Col>
+                        <Col span={12}>
+                            <Timeline>
+                                {Array.isArray(stepReturnItems) &&
+                                    stepReturnItems?.length > 0 &&
+                                    stepReturnItems?.map((item, index) => {
+                                        return (
+                                            <Timeline.Item key={index} color={item?.status === 'success' ? 'green' : 'red'}>
+                                                {item?.output || '___'}
+                                            </Timeline.Item>
+                                        );
+                                    })}
+                            </Timeline>
+                        </Col>
+                    </Row>
                 </Card>
             </Col>
         </Row>
