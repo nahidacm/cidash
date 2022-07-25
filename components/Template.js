@@ -1,3 +1,4 @@
+import { useEffect, useState, useContext, Children, isValidElement, cloneElement } from "react";
 import {
     PieChartOutlined,
     UserOutlined,
@@ -6,10 +7,9 @@ import {
     FileDoneOutlined,
 } from "@ant-design/icons";
 import { PageHeader, Layout, Menu } from "antd";
-import { useEffect, useState } from "react";
 import styles from "../styles/Template.module.less";
-const { Header, Content, Footer, Sider } = Layout;
 import { useRouter } from "next/router";
+import io from 'socket.io-client';
 
 function getItem(label, key, icon, children) {
     return {
@@ -28,9 +28,8 @@ const items = [
     ]),
     getItem("Option 2", "4", <DesktopOutlined />),
     getItem("User", "sub1", <UserOutlined />, [
-        getItem("Tom", "5"),
-        getItem("Bill", "6"),
-        getItem("Alex", "7"),
+        getItem("Add New", "/users/new"),
+        getItem("Users", "/users"),
     ]),
     getItem("Team", "sub2", <TeamOutlined />, [
         getItem("Team 1", "8"),
@@ -41,10 +40,54 @@ const items = [
 
 
 const Template = ({ children }) => {
+    // States
     const [collapsed, setCollapsed] = useState(false);
     const [headerTitle, setHeaderTitle] = useState('');
+    const [socketConnected, setSocketConnected] = useState(false);
+    const [stepResults, setStepResults] = useState(null);
+    
+    // Router
     const router = useRouter();
     const {pathname} = router;
+
+    // Antd Constants
+    const { Header, Content, Footer, Sider } = Layout;
+
+    // Socket
+    let socket = io();
+
+
+    const turnSocketOn = async () => {
+        let response = await fetch("/api/socket");
+  
+        if (response?.status === 200) {
+            setSocketConnected(true);
+        }
+    };
+
+    useEffect(() => {
+        // Turn socket connection on on first page load
+        turnSocketOn();
+    }, []);
+
+    useEffect(() => {
+        if (socketConnected) {
+            socket.on("connect", () => {
+                console.log("connected");
+            });
+  
+            socket.on("command-output", (msg) => {
+                console.log("command-output: ", msg);
+                setStepResults(msg);
+            });
+        }
+
+        // return(() => {
+        //     setStepResults([]);
+        // });
+
+    }, [socketConnected]);
+  
 
     useEffect(() => {
       // Set title when first load and on home (/)
@@ -62,6 +105,17 @@ const Template = ({ children }) => {
       router.push("/");
       setHeaderTitle("Dashboard");
     }
+
+    const resetStepResults = () => {
+        setStepResults(null);
+    }
+
+    const childrenWithProps = Children.map(children, child => {
+        if(isValidElement(child)) {
+            return cloneElement(child, {stepResults, resetStepResults});
+        }
+        return child;
+    });
 
     return (
         <Layout
@@ -109,7 +163,7 @@ const Template = ({ children }) => {
                             minHeight: 360,
                         }}
                     >
-                        {children}
+                        {childrenWithProps}
                     </div>
                 </Content>
                 <Footer

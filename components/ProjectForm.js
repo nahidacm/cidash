@@ -1,15 +1,6 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Space, Row, Col } from "antd";
-
-const layout = {
-    labelCol: {
-      span: 8,
-    },
-    wrapperCol: {
-      span: 16,
-    },
-  };
-
+import { v4 as uuidv4 } from 'uuid';
 
 const validateMessages = {
     required: "${label} is required!",
@@ -27,6 +18,8 @@ const ProjectForm = (props) => {
     const { submitFunction, form, actionType } = props;
 
     const onFinish = async (values) => {
+        // console.log('values onfinish: ', values);
+        
         let response = await submitFunction(values);
 
         if (response === "success" && actionType === 'create') {
@@ -36,7 +29,6 @@ const ProjectForm = (props) => {
 
     return (
         <Form
-            // {...layout}
             layout="vertical"
             name="project-form"
             onFinish={onFinish}
@@ -90,6 +82,13 @@ const ProjectForm = (props) => {
                                         ]}
                                     >
                                         <Input placeholder="Command" />
+                                    </Form.Item>
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, "step_id"]}
+                                        initialValue={uuidv4()}
+                                    >
+                                    
                                     </Form.Item>
                                 </Col>
                                 <Col
