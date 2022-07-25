@@ -67,8 +67,6 @@ export default function Projects() {
                     return (
                         <Card
                             key={index}
-                            // title={item.name}
-                            // extra={genExtra(item)}
                             style={{ width: "100%", marginBottom: "2%" }}
                         >
                            <Row>
