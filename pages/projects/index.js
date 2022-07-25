@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Button,
   Form,
@@ -9,9 +9,10 @@ import {
   Space,
   Collapse,
   Select,
+  Card,
 } from "antd";
-import { MinusCircleOutlined, PlusOutlined, PlaySquareOutlined, EditOutlined } from "@ant-design/icons";
-import io from 'socket.io-client';
+import { CodeOutlined, EditOutlined } from "@ant-design/icons";
+import { useRouter } from 'next/router'
 
 
 export default function Projects() {
@@ -22,8 +23,9 @@ export default function Projects() {
     const { Panel } = Collapse;
     const { Option } = Select;
 
-    // Other
-    let socket = io();
+    // Router
+    const router = useRouter();
+
 
     useEffect(() => {
         fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/projects", {
@@ -32,52 +34,52 @@ export default function Projects() {
             .then((res) => res.json())
             .then((projects) => {
                 setProjects(projects);
-                //   setLoading(false)
             });
     }, []);
 
-    const executeCommands = (event, steps) => {
-        console.log('event: ', event);
-        // event.preventDefault();
-
-        steps && steps?.forEach((stepItem, index) => {
-            socket.emit('command-input', stepItem?.command);
-        });
+    const openProjectDetails = (projectId) => {
+        router.push(`/projects/details/${projectId}`);
     }
 
     const genExtra = (item) => {
-        let steps = item?.steps && item?.steps?.length>0 ? item?.steps : null;
-
-        return(
-            <>
-            <PlaySquareOutlined
-                onClick={(event) => executeCommands(event, steps)}
-            />
-            <Button
-                type="text"
-                href={`/projects/edit?id=` + item._id}
-                icon={<EditOutlined />}
-            />
-        </>
+        return (
+            <Space>
+                <Button
+                    onClick={() => openProjectDetails(item._id)}
+                    icon={<CodeOutlined />}
+                >
+                    Details
+                </Button>
+                <Button
+                    href={`/projects/edit/` + item._id}
+                    icon={<EditOutlined />}
+                >
+                    Edit
+                </Button>
+            </Space>
         );
-    }
+    };
 
     return (
         <Row justify="center">
-            <Col xs={24} sm={24} md={18} lg={16} xl={12}>
-                <Collapse>
-                    {projects.map((item, index) => {
-                        return (
-                            <Panel
-                                header={<h4>{item.name}</h4>}
-                                key={index}
-                                extra={genExtra(item)}
-                            >
-                                <div>{item.description}</div>
-                            </Panel>
-                        );
-                    })}
-                </Collapse>
+            <Col xs={24} sm={24} md={24} lg={16} xl={12}>
+                {projects.map((item, index) => {
+                    return (
+                        <Card
+                            key={index}
+                            style={{ width: "100%", marginBottom: "2%" }}
+                        >
+                           <Row>
+                            <Col xs={14}>
+                                {item.name}
+                            </Col>
+                            <Col xs={10}>
+                                {genExtra(item)}
+                            </Col>
+                           </Row>
+                        </Card>
+                    );
+                })}
             </Col>
         </Row>
     );

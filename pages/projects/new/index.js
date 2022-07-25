@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Form, Input, message, Col, Row, Space } from "antd";
-import ProjectForm from "../../components/ProjectForm";
+import ProjectForm from "../../../components/ProjectForm";
 
 export default function NewProject() {
     // Antd Constants
