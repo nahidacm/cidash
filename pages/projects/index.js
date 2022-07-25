@@ -62,16 +62,23 @@ export default function Projects() {
 
     return (
         <Row justify="center">
-            <Col xs={24} sm={24} md={18} lg={16} xl={12}>
+            <Col xs={24} sm={24} md={24} lg={16} xl={12}>
                 {projects.map((item, index) => {
                     return (
                         <Card
                             key={index}
-                            title={item.name}
-                            extra={genExtra(item)}
+                            // title={item.name}
+                            // extra={genExtra(item)}
                             style={{ width: "100%", marginBottom: "2%" }}
                         >
-                            <p>{item.description}</p>
+                           <Row>
+                            <Col xs={14}>
+                                {item.name}
+                            </Col>
+                            <Col xs={10}>
+                                {genExtra(item)}
+                            </Col>
+                           </Row>
                         </Card>
                     );
                 })}
