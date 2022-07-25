@@ -26,14 +26,19 @@ const ProjectDetails = (props) => {
 
 
     useEffect(() => {
-        fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/projects/" + projectid, {
-            method: "GET",
-        })
-            .then((res) => res.json())
-            .then((response) => {
-                setProjectData(response);
-            });
-    }, [projectid]);
+        if (router.isReady) {
+            fetch(
+                process.env.NEXT_PUBLIC_BASE_URL + "/api/projects/" + projectid,
+                {
+                    method: "GET",
+                }
+            )
+                .then((res) => res.json())
+                .then((response) => {
+                    setProjectData(response);
+                });
+        }
+    }, [router.isReady]);
 
     useEffect(() => {
         resetStepResults();
