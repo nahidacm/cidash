@@ -28,9 +28,8 @@ const items = [
     ]),
     getItem("Option 2", "4", <DesktopOutlined />),
     getItem("User", "sub1", <UserOutlined />, [
-        getItem("Tom", "5"),
-        getItem("Bill", "6"),
-        getItem("Alex", "7"),
+        getItem("Add New", "/users/new"),
+        getItem("Users", "/users"),
     ]),
     getItem("Team", "sub2", <TeamOutlined />, [
         getItem("Team 1", "8"),
