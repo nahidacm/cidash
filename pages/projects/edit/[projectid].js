@@ -42,8 +42,6 @@ export default function EditProject() {
 
         return new Promise((resolve, reject) => {
             if (res) {
-                console.log("res: ", res);
-
                 message.success({
                     content: "Updated Successfully!",
                     key,

@@ -7,9 +7,6 @@ const SocketResultContextProvider = ({ children }) => {
     // States 
     const [stepsResults, setStepsResults] = useState([]);
 
-    console.log('stepsResults: ', stepsResults);
-    
-
     const pushResultData = (commandOutput) => {
         let stepsResultCopy = [...stepsResults];
         stepsResultCopy.push(commandOutput);

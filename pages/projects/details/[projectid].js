@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { Steps, Row, Col, Card, Button } from "antd";
 import { CaretRightOutlined } from '@ant-design/icons';
 import io from 'socket.io-client';
-import { Steps } from 'antd';
 
 const ProjectDetails = (props) => {
     // Props
@@ -31,7 +31,6 @@ const ProjectDetails = (props) => {
         })
             .then((res) => res.json())
             .then((response) => {
-                console.log('response: ', response);
                 setProjectData(response);
             });
     }, [projectid]);
@@ -51,26 +50,34 @@ const ProjectDetails = (props) => {
     }
 
     useEffect(() => {
-        if(steps && startExecute) {
-            if(!stepResults) {
+        if (steps && startExecute) {
+            if (!stepResults) {
                 let poppedFirstElement = steps.shift();
-                if(poppedFirstElement) {
-                    socket.emit('command-input', poppedFirstElement?.command);
+
+                if (poppedFirstElement) {
+                    socket.emit("command-input", poppedFirstElement?.command);
+                } else {
+                    setStartExecute(false);
                 }
-            }
-            else {
-                if(stepResults?.status === 'success') {
+            } else {
+                if (stepResults?.status === "success") {
                     let poppedFirstElement = steps.shift();
-                    if(poppedFirstElement) {
-                        socket.emit('command-input', poppedFirstElement?.command);
+
+                    if (poppedFirstElement) {
+                        socket.emit(
+                            "command-input",
+                            poppedFirstElement?.command
+                        );
+                    } else {
+                        setStartExecute(false);
                     }
-                }
-                else {
+                } else {
+                    setStartExecute(false);
+
                     return;
                 }
             }
         }
-        
     }, [startExecute, stepResults, steps]);
 
     useEffect(() => {
@@ -90,32 +97,52 @@ const ProjectDetails = (props) => {
         }
     }
 
+    const genExtra = () => {
+        return (
+            <>
+                <Button onClick={executeCommands} icon={<CaretRightOutlined />}>
+                    Run Commands
+                </Button>
+            </>
+        );
+    };
+
+
     return (
-        <>
-            <div>Project Details</div>
-            <CaretRightOutlined onClick={executeCommands} />
-            <Steps direction="vertical" current={1}>
-                {Array.isArray(stepReturnItems) &&
-                    stepReturnItems?.length > 0 &&
-                    stepReturnItems?.map((item, index) => {
-                        return (
-                            <Step
-                                key={index}
-                                title={returnStepTitle(item?.status)}
-                                description={item?.command}
-                                status={
-                                    returnStepTitle(item?.status) === "Finished"
-                                        ? "finish"
-                                        : returnStepTitle(item?.status) ===
-                                          "Failed"
-                                        ? "error"
-                                        : null
-                                }
-                            />
-                        );
-                    })}
-            </Steps>
-        </>
+        <Row justify="center">
+            <Col xs={24} sm={24} md={18} lg={16} xl={12}>
+                <Card
+                    title={projectData?.name}
+                    extra={genExtra()}
+                    style={{ width: "100%", marginBottom: "2%" }}
+                >
+                    <p>{projectData?.description}</p>
+                    <Steps direction="vertical" current={1}>
+                        {Array.isArray(stepReturnItems) &&
+                            stepReturnItems?.length > 0 &&
+                            stepReturnItems?.map((item, index) => {
+                                return (
+                                    <Step
+                                        key={index}
+                                        title={returnStepTitle(item?.status)}
+                                        description={item?.command}
+                                        status={
+                                            returnStepTitle(item?.status) ===
+                                            "Finished"
+                                                ? "finish"
+                                                : returnStepTitle(
+                                                      item?.status
+                                                  ) === "Failed"
+                                                ? "error"
+                                                : null
+                                        }
+                                    />
+                                );
+                            })}
+                    </Steps>
+                </Card>
+            </Col>
+        </Row>
     );
 }
  

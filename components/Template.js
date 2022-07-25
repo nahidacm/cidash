@@ -10,8 +10,6 @@ import { PageHeader, Layout, Menu } from "antd";
 import styles from "../styles/Template.module.less";
 import { useRouter } from "next/router";
 import io from 'socket.io-client';
-// import { SocketResultContext } from '../contexts/SocketResultContext';
-
 
 function getItem(label, key, icon, children) {
     return {
