@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 
 const ProjectDetails = (props) => {
     // Props
-    const { stepResults, resetStepResults } = props;
+    const { stepResults, resetStepResults} = props;
 
     // States
     const [projectData, setProjectData] = useState(null);
@@ -63,6 +63,7 @@ const ProjectDetails = (props) => {
                     socket.emit("command-input", poppedFirstElement?.command);
                 } else {
                     setStartExecute(false);
+                    resetStepResults();
                 }
             } else {
                 if (stepResults?.status === "success") {
@@ -75,9 +76,11 @@ const ProjectDetails = (props) => {
                         );
                     } else {
                         setStartExecute(false);
+                        resetStepResults();
                     }
                 } else {
                     setStartExecute(false);
+                    resetStepResults();
 
                     return;
                 }
