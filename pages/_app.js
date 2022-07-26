@@ -1,14 +1,17 @@
-import Template from '../components/Template';
+import Template from "../components/Template";
 import "../styles/antd.less";
 import '../styles/globals.less'
 import '../styles/styles.css'
+import SocketResultContextProvider from "../contexts/SocketResultContext";
 
 function MyApp({ Component, pageProps }) {
-  return (
-    <Template>
-      <Component {...pageProps} />
-    </Template>
-  )
+    return (
+        <SocketResultContextProvider>
+            <Template>
+                <Component {...pageProps} />
+            </Template>
+        </SocketResultContextProvider>
+    );
 }
 
-export default MyApp
+export default MyApp;
