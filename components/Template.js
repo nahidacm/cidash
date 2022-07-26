@@ -36,6 +36,7 @@ const items = [
         getItem("Team 2", "9"),
     ]),
     getItem("Files", "10", <FileDoneOutlined />),
+    getItem("Terminal", '/term', <PieChartOutlined />),
 ];
 
 

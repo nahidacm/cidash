@@ -63,3 +63,15 @@ input {
   margin: 0.5rem 0;
   text-align: center;
 }
+
+.terminalContainer {
+  height: calc(100vh - 190px);
+}
+
+.react-terminal-wrapper {
+  height: 100% !important;
+}
+
+.react-terminal {
+  height: 100% !important;
+}
