@@ -18,8 +18,10 @@ const SocketHandler = (req, res) => {
         io.on("connection", (socket) => {
             socket.on("command-input", (command) => {
                 console.log("command-input: ", command);
-                // ptyProcess.write(`${msg}\r`);
-                executeCommands.spawn(command, [], {})
+                let splittedCommand = command ? command.split(" ") : "";
+                let argumentsArray = splittedCommand ? splittedCommand.slice(1) : [];
+                
+                executeCommands.spawn(splittedCommand[0], argumentsArray, {})
                     .then((result) => {
                         if(result?.stdout) {
                             socket.broadcast.emit("command-output", {status: 'success', command: command, output: result?.stdout});
