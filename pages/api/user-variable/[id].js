@@ -1,4 +1,4 @@
-import projects from "../../../models/users";
+import projects from "../../../models/userVariables";
 import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {

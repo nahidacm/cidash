@@ -2,29 +2,25 @@ export const BASE_URL = "http://localhost:3000";
 import { useState, useEffect } from "react";
 import Router from "next/router";
 import Link from "next/link";
-import { useUser } from "../../lib/hooks";
-import { Button, Form, Input, message, Col, Row, Space } from "antd";
-import UserForm from "../../components/UserForm";
 
-export default function UserPage() {
-  const [user, { mutate }] = useUser();
+import { Button, Form, Input, message, Col, Row, Space } from "antd";
+import UserVariable from "../../components/UserVariable";
+
+export default function UserVariablePage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [form] = Form.useForm();
 
-  const addUser = async (values) => {
+  const addUserVariable = async (values) => {
     const key = "updatable";
     message.loading({
       content: "Saving...",
       key,
     });
 
-    const res = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + "/api/users",
-      {
-        method: "POST",
-        body: JSON.stringify(values),
-      }
-    );
+    const res = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/user-variable", {
+      method: "POST",
+      body: JSON.stringify(values),
+    });
 
     return new Promise((resolve, reject) => {
       if (res && res?.status === 201) {
@@ -48,7 +44,7 @@ export default function UserPage() {
   return (
     <Row justify="center">
       <Col xs={24} sm={24} md={18} lg={16} xl={12}>
-        <UserForm submitFunction={addUser} form={form} actionType="create" />
+        <UserVariable submitFunction={addUserVariable} form={form} actionType="create" />
       </Col>
     </Row>
   );

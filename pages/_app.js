@@ -1,6 +1,7 @@
 import Template from "../components/Template";
 import "../styles/antd.less";
-import "../styles/globals.less";
+import '../styles/globals.less'
+import '../styles/styles.css'
 import SocketResultContextProvider from "../contexts/SocketResultContext";
 
 function MyApp({ Component, pageProps }) {
