@@ -1,4 +1,4 @@
-import projects from "../../../models/deploymentCount";
+import projects from "../../../models/projects";
 
 export default async function handler(req, res) {
   const collection = await projects();
