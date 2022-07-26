@@ -35,6 +35,14 @@ const items = [
         getItem("Add New", "/variables/new"),
         getItem("Variables", "/variables"),
     ]),
+
+    getItem("SSH connection Management", "5", <FileDoneOutlined />, [
+        getItem("Add New", "/ssh-connection/new"),
+        getItem("Connections", "/ssh-connection"),
+    ]),
+
+
+    
     getItem("Team", "sub2", <TeamOutlined />, [
         getItem("Team 1", "8"),
         getItem("Team 2", "9"),
