@@ -27,15 +27,15 @@ import {
 
 import io from "socket.io-client";
 
-const deleteUSer = async (event) => {
-  fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/" + id, {
+const deleteUserVariable = async (event) => {
+  fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/user-variable/" + id, {
     method: "DELETE",
   });
 };
 
-export default function Users() {
+export default function UserVariables() {
   // States
-  const [users, setUsers] = useState([]);
+  const [userVariables, setUserVariables] = useState([]);
   const [refresh, setRefresh] = useState(0);
   const [rowData, setRowData] = useState(null);
   const [visible, setVisible] = useState(false);
@@ -52,21 +52,26 @@ export default function Users() {
   };
 
   const handleDelete = (e) => {
-    fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users/" + e.variables.deleteUserId, {
-      method: "DELETE",
-    });
-    message.success("User Deleted Successfully");
+    fetch(
+      process.env.NEXT_PUBLIC_BASE_URL +
+        "/api/user-variable/" +
+        e.variables.deleteUserId,
+      {
+        method: "DELETE",
+      }
+    );
+    message.success("User Variable Deleted Successfully");
     refetch();
   };
 
   useEffect(() => {
-    fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/users", {
+    fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/user-variable", {
       method: "GET",
     })
       .then((res) => res.json())
-      .then((users) => {
-        setUsers(users);
-        console.log(users);
+      .then((userVariables) => {
+        setUserVariables(userVariables);
+        console.log(userVariables);
       });
   }, [refresh]);
 
@@ -81,39 +86,14 @@ export default function Users() {
 
   const columns = [
     {
-      title: "Full Name",
-      dataIndex: "full_name",
-      key: "full_name",
-      render: (text) => <a>{text}</a>,
+      title: "Key",
+      dataIndex: "key",
+      key: "key",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Image",
-      key: "image",
-      align: "center",
-      render(row) {
-        if (row?.image) {
-          return (
-            <Image
-              width={80}
-              alt="Image"
-              preview={false}
-              src={BASE_URL + "/uploads/" + row?.image.file.name}
-            />
-          );
-        } else {
-          return <Tag color={"warning"}>No Image</Tag>;
-        }
-      },
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-      key: "phone",
+      title: "Value",
+      dataIndex: "value",
+      key: "val",
     },
 
     {
@@ -128,13 +108,13 @@ export default function Users() {
               setFlag("Edit");
               setRowData(record);
             }}
-            href={`/users/edit?id=` + record._id}
+            href={`/variables/edit?id=` + record._id}
           >
             Edit {record.name}
           </a>
 
           <Popconfirm
-            title="Are you sure to delete this task?"
+            title="Are you sure to delete this?"
             onConfirm={(e) => {
               handleDelete({
                 variables: {
@@ -146,7 +126,7 @@ export default function Users() {
             okText="Yes"
             cancelText="No"
           >
-            <a href={`/users/delete?id=` + record._id}>Delete</a>
+            <a href={`/variables/delete?id=` + record._id}>Delete</a>
           </Popconfirm>
         </Space>
       ),
@@ -157,7 +137,7 @@ export default function Users() {
     <section className="content-main">
       <div className="content-header">
         <div>
-          <h2 className="content-title card-title">User List</h2>
+          <h2 className="content-title card-title">Variable List</h2>
         </div>
         <div></div>
       </div>
@@ -169,7 +149,7 @@ export default function Users() {
             size="middle"
             columns={columns}
             refresh={refresh}
-            dataSource={users || []}
+            dataSource={userVariables || []}
           />
         </Card>
       </div>
