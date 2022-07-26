@@ -1,6 +1,6 @@
 import database from "./database";
 
-export default async function projects() {
+export default async function sshConnections() {
   const db = await database();
   const collection = db.collection("ssh-connections");
 
