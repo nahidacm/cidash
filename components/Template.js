@@ -55,8 +55,8 @@ const items = [
     getItem("Team 2", "9"),
   ]),
   getItem("Files", "10", <FileDoneOutlined />),
-  getItem("Terminal", "/term", <PieChartOutlined />),
-  getItem("Xterm", "/ssh", <DisconnectOutlined />),
+  getItem("React Terminal", "/react-terminal", <PieChartOutlined />),
+  getItem("SSH Terminal", "/ssh", <DisconnectOutlined />),
 ];
 
 const Template = ({ children }) => {
@@ -75,9 +75,6 @@ const Template = ({ children }) => {
 
   // Socket
   let socket = io();
-
-  console.log('socket in template: ', socket);
-  
 
   const turnSocketOn = async () => {
     let response = await fetch("/api/socket");

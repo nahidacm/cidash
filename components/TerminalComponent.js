@@ -1,105 +1,118 @@
-import React, {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { Terminal } from "xterm";
-import { FitAddon } from "xterm-addon-fit";
-import { Resizable } from "re-resizable";
-import ResizeObserver from "react-resize-observer";
-import c from "ansi-colors";
 
-let term;
-const fitAddon = new FitAddon();
 
-const TerminalComponent = () => {
-    // States
-    const [commandText, setCommandText] = useState([]);
+const TerminalComponent = (props) => {
+    // Props
+    const { stepResults, socketConnected, socket } = props;
 
-    console.log('commandText state: ', commandText);
-    
+    // Socket
+    const terminalObject = new Terminal();
 
-    const prompt = () => {
-        var shellprompt = "$ ";
-        term.write("\r\n" + shellprompt);
-    };
+    // Others
+    let commandLine = "";
+
+    console.log('socket in xterm: ', socket);
 
     useEffect(() => {
-        term = new Terminal({
-            convertEol: true,
+        if (socketConnected) {
+          socket.on("connect", () => {
+            console.log("connected in xterm");
+            // socket.emit("term-input", "ls\r"); 
+          });
+    
+          socket.on("command-output", (msg) => {
+            console.log("command-output xterm: ", msg);
+            if(msg) {
+                write(msg?.output);
+                commandLine = "";
+            }
+          });
+        }
+    
+        // return(() => {
+        //     setStepResults([]);
+        // });
+      }, [socketConnected]);
+
+
+    useEffect(() => {
+        terminalObject.setOption("theme", {
+            background: "#252A33",
+            foreground: "#A2A29F",
             fontFamily: `'Fira Mono', monospace`,
-            fontSize: 15,
-            fontWeight: 900,
-            // rendererType: "dom" // default is canvas
-        });
+          });
+    }, [terminalObject]);
 
-        //Styling
-        term.setOption("theme", {
-            background: "black",
-            foreground: "white",
-        });
 
-        // Load Fit Addon
-        term.loadAddon(fitAddon);
+    const startListening = () => {
+        terminalObject.onKey((key, event) => {
+            const eventCode = key?.domEvent?.keyCode;
+            const unAcceptedCodes = [9, 33, 34, 39, 38, 37, 40];
 
-        // Open the terminal in #terminal-container
-        term.open(document.getElementById("xterm-one"));
-        console.log("comp did");
-
-        //Write text inside the terminal
-        term.write(
-            c.magenta("I am ") + c.blue("Blue") + c.red(" and i like it")
-        );
-
-        // Make the terminal's size and geometry fit the size of #terminal-container
-        fitAddon.fit();
-
-        term.onKey((key) => {
-            console.log('key: ', key);
-            let letter = key?.key;
-            console.log('letter: ', typeof letter);
-            
-           let commandTextCopy = [...commandText];
-           commandTextCopy.push(letter);
-            
-            setCommandText(commandTextCopy);
-            
-            const char = key.domEvent.key;
-            if (char === "Enter") {
-                prompt();
-            } else if (char === "Backspace") {
-                term.write("\b \b");
-            } else {
-                term.write(char);
+            if(eventCode === 13) {
+                // ENTER
+                sendInput(commandLine);
+                // prompt();
+                commandLine = "";
+            }
+            else if(eventCode === 8) {
+                // DELETE
+                commandLine = commandLine.slice(0, -1);
+                write('\b \b');
+            }
+            else {
+                // ADD
+                commandLine+=key.key;
+                write(key.key);
             }
         });
+    }
 
+    const write = (text) =>  {
+        terminalObject.write(text);
+    }
+
+    const prompt = () => {
+        terminalObject.write(`\r\n$ `);
+    }
+
+    const sendInput = (input) => {
+        socket.emit("term-input", input);
+    }
+
+    const attachTo = (container) => {
+        terminalObject.open(container);
+        // Default text to display on terminal.
+        terminalObject.write("Terminal Connected");
+        terminalObject.write("");
         prompt();
+    }
+
+    const clear = () => {
+        terminalObject.clear();
+    }
+
+    const startTerminal = (container, socket) => {
+        attachTo(container);
+
+        // When terminal attached to DOM, start listening for input, output events.
+        startListening();
+    }
+
+    const start = () => {
+        const container = document.getElementById("terminal-container");
+        startTerminal(container, socket);
+    }
+
+    useEffect(() => {
+        // Better to start on DOMContentLoaded. So, we know terminal-container is loaded
+        start();
     }, []);
+
     return (
-        <>
-            <h1>Xterm.js</h1>
-            <Resizable
-                width={350}
-                height={350}
-                style={{
-                    background: "firebrick",
-                    padding: "0.4em",
-                    margin: "1em",
-                }}
-            >
-                <div
-                    id="xterm-one"
-                    style={{ height: "100%", width: "100%" }}
-                />
-                {/* <ResizeObserver
-        onResize={rect => {
-          fitAddon.fit();
-          console.log("Resized. New bounds:", rect.width, "x", rect.height);
-        }}
-        onPosition={rect => {
-          console.log("Moved. New position:", rect.left, "x", rect.top);
-        }}
-      /> */}
-            </Resizable>
-        </>
+        <div id="terminal-container"></div>
     );
-}
- 
+};
+
 export default TerminalComponent;
