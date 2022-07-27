@@ -16,7 +16,7 @@ const ptyProcess = pty.spawn(shell, [], {
 
 ptyProcess.on('data', function(data) {
     if(socketCopy) {
-        socketCopy.broadcast.emit("command-output", {status: 'success', command: 'test', output: data});
+        socketCopy.emit("command-output", {status: 'success', command: 'test', output: data});
     }
 });
 

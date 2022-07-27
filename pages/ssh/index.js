@@ -9,7 +9,7 @@ const ExTerminalComponent = dynamic(() => import('../../components/ExTerminalCom
 });
 
 const Terminal = (props) => {
-    const {stepResults} = props;
+    const {stepResults, socket, socketConnected} = props;
 
     console.log('stepResults parent: ', stepResults);
     
@@ -17,7 +17,7 @@ const Terminal = (props) => {
     return (
         <div className="App" style={{ background: "" }}>
             {/* <TerminalComponent /> */}
-            <ExTerminalComponent stepResults={stepResults} />
+            <ExTerminalComponent stepResults={stepResults} socket={socket} socketConnected={socketConnected} />
         </div>
     );
 };

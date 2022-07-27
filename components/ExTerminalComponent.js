@@ -5,36 +5,42 @@ import { Terminal } from "xterm";
 
 const SSHComponent = (props) => {
     // Props
-    const { stepResults } = props;
+    const { stepResults, socketConnected, socket } = props;
 
     // States
     const [commandText, setCommandText] = useState("test");
 
     // Socket
-    let socket = io();
+    // let socket = io();
     const terminalObject = new Terminal();
-    console.log('terminalObject: ', terminalObject);
 
-    console.log('socket: ', socket);
+    console.log('terminalObject: ', terminalObject);
+    console.log('socket in xterm: ', socket);
+    console.log('stepResults: ', stepResults);
     
 
     let commandLine = "";
 
-    console.log('stepResults child: ', stepResults);
-
     useEffect(() => {
-        console.log('stepResults useeffect: ', stepResults);
-        if(stepResults) {
-            write(stepResults?.output);
+        if (socketConnected) {
+          socket.on("connect", () => {
+            console.log("connected in xterm");
+            // socket.emit("term-input", "ls\r"); 
+          });
+    
+          socket.on("command-output", (msg) => {
+            console.log("command-output xterm: ", msg);
+            if(msg) {
+                write(msg?.output);
+                commandLine = "";
+            }
+          });
         }
-        
-    }, [stepResults]);
     
-
-    
-    useEffect(() => {
-        console.log('commandLine: ', commandLine);
-    }, [commandLine]);
+        // return(() => {
+        //     setStepResults([]);
+        // });
+      }, [socketConnected]);
 
 
 
@@ -45,21 +51,18 @@ const SSHComponent = (props) => {
           });
     }, [terminalObject]);
 
-    useEffect(() => {
-        socket.on("command-output", (msg) => {
-            console.log("command-output in x: ", msg);
-            // setStepResults(msg);
-        });
-    }, [socket]);
+    // useEffect(() => {
+    //     socket.on("command-output", (msg) => {
+    //         console.log("command-output in x: ", msg);
+    //         // setStepResults(msg);
+    //     });
+    // }, [socket]);
     
 
     const startListening = () => {
-        
-
         terminalObject.onKey((key, event) => {
             console.log('key: ', key);
             console.log('event: ', event);
-
             
             const eventCode = key?.domEvent?.keyCode;
             console.log('eventCode: ', eventCode);
@@ -87,22 +90,19 @@ const SSHComponent = (props) => {
                 write(key.key);
             }
         });
-
-
         
-
-        
-    
-        
-        // socket.on("xterm-output", data => {
+        // socket.on("command-output", data => {
         //   // When there is data from PTY on server, print that on Terminal.
+        //   console.log('command-output xterm: ', data);
+          
         //   write(data);
         // });
+
+    // terminalObject.onData(data => sendInput(data));
     }
 
     const write = (text) =>  {
         console.log('write text: ', text);
-        
         terminalObject.write(text);
     }
 
@@ -112,13 +112,11 @@ const SSHComponent = (props) => {
 
     const sendInput = (input) => {
         console.log('data in sendInput: ', input);
-        
         socket.emit("term-input", input);
     }
 
     const attachTo = (container) => {
         console.log('container in attachTo: ', container);
-        
         terminalObject.open(container);
         // Default text to display on terminal.
         terminalObject.write("Terminal Connected");

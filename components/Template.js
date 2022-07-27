@@ -76,6 +76,9 @@ const Template = ({ children }) => {
   // Socket
   let socket = io();
 
+  console.log('socket in template: ', socket);
+  
+
   const turnSocketOn = async () => {
     let response = await fetch("/api/socket");
 
@@ -96,7 +99,7 @@ const Template = ({ children }) => {
       });
 
       socket.on("command-output", (msg) => {
-        console.log("command-output: ", msg);
+        console.log("command-output template: ", msg);
         setStepResults(msg);
       });
     }
@@ -129,7 +132,7 @@ const Template = ({ children }) => {
 
   const childrenWithProps = Children.map(children, (child) => {
     if (isValidElement(child)) {
-      return cloneElement(child, { stepResults, resetStepResults });
+      return cloneElement(child, { stepResults, resetStepResults, socket, socketConnected });
     }
     return child;
   });
