@@ -3,7 +3,7 @@
 import withLess from "next-with-less";
 
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   ...withLess({
     lessLoaderOptions: {
       /* ... */

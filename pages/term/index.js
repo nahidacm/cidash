@@ -6,6 +6,11 @@ import Terminal, {
 } from "react-terminal-ui";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from 'uuid';
+import Ansi from "ansi-to-react";
+import Convert from "ansi-to-html";
+import parseAnsi from "parse-ansi";
+import AU from "ansi_up";
+import { ANSI } from 'ansi-text'
 
 const Term = (props) => {
     // Props
@@ -17,6 +22,10 @@ const Term = (props) => {
 
     // Socket
     let socket = io();
+
+    // Others
+    const convertAnsi = new Convert();
+    const ansi_up = new AU.default;
 
     const onInput = (input) => {
         let ld = [...lineData];
@@ -35,7 +44,9 @@ const Term = (props) => {
     useEffect(() => {
         if(stepResults) {
             let ld = [...lineData];
-            ld.push(<TerminalOutput key={uuidv4()}>{stepResults?.output}</TerminalOutput>);
+            console.log('amnsi out: ', ANSI(stepResults?.output));
+            
+            ld.push(<TerminalOutput key={uuidv4()}>{ANSI(stepResults?.output)}</TerminalOutput>);
             setLineData(ld);
         }
     }, [stepResults]);
