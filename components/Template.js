@@ -56,6 +56,7 @@ const items = [
   ]),
   getItem("Files", "10", <FileDoneOutlined />),
   getItem("Terminal", "/term", <PieChartOutlined />),
+  getItem("Xterm", "/ssh", <DisconnectOutlined />),
 ];
 
 const Template = ({ children }) => {

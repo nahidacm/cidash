@@ -1,96 +1,97 @@
-import io from "socket.io-client";
-import { useEffect } from "react";
+import React from "react";
 import { Terminal } from "xterm";
+import { FitAddon } from "xterm-addon-fit";
+// import "./xterm.css";
+// import "./App.css";
+import { Resizable } from "re-resizable";
+import ResizeObserver from "react-resize-observer";
+import c from "ansi-colors";
 
+let term;
+const fitAddon = new FitAddon();
 
-const SSHComponent = () => {
-    // Socket
-    let socket = io();
-    const terminalObject = new Terminal();
-    console.log('terminalObject: ', terminalObject);
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-    useEffect(() => {
-        terminalObject.setOption("theme", {
-            background: "#202B33",
-            foreground: "#F5F8FA"
-          });
-    }, [terminalObject]);
+    this.state = {
+      logs: ""
+    };
+  }
 
-    const startListening = () => {
-        terminalObject.onData((data) => {
-            console.log('terminal ondata: ', data);
-            
-            sendInput(data);
-        });
-    
-        
-        // socket.on("xterm-output", data => {
-        //   // When there is data from PTY on server, print that on Terminal.
-        //   write(data);
-        // });
-    }
+  componentDidMount() {
+    term = new Terminal({
+      convertEol: true,
+      fontFamily: `'Fira Mono', monospace`,
+      fontSize: 15,
+      fontWeight: 900
+      // rendererType: "dom" // default is canvas
+    });
 
-    const write = (text) =>  {
-        terminalObject.write(text);
-    }
+    //Styling
+    term.setOption("theme", {
+      background: "black",
+      foreground: "white"
+    });
 
-    const prompt = () => {
-        terminalObject.write(`\r\n$ `);
-    }
+    // Load Fit Addon
+    term.loadAddon(fitAddon);
 
-    const sendInput = (input) => {
-        console.log('data in sendInput: ', input);
-        
-        socket.emit("command-input", input);
-    }
-
-    const attachTo = (container) => {
-        console.log('container in attachTo: ', container);
-        
-        terminalObject.open(container);
-        // Default text to display on terminal.
-        terminalObject.write("Terminal Connected");
-        terminalObject.write("");
-        prompt();
-    }
-
-    const clear = () => {
-        terminalObject.clear();
-    }
-    
+    // Open the terminal in #terminal-container
+    term.open(document.getElementById("xterm-one"));
+    console.log('comp did');
     
 
-    function startTerminal(container, socket) {
-        // Create an xterm.js instance (TerminalUI class is a wrapper with some utils. Check that file for info.)
-        console.log('container: ', container);
-        console.log('socket: ', socket);
-        
-        
-        // const terminal = new TerminalUI(socket);
+    //Write text inside the terminal
+    term.write(c.magenta("I am ") + c.blue("Blue") + c.red(" and i like it"));
 
-        // Attach created terminal to a DOM element.
-        attachTo(container);
+    // Make the terminal's size and geometry fit the size of #terminal-container
+    fitAddon.fit();
 
-        // When terminal attached to DOM, start listening for input, output events.
-        // Check TerminalUI startListening() function for details.
-        startListening();
-    }
+    term.onKey(key => {
+      const char = key.domEvent.key;
+      if (char === "Enter") {
+        this.prompt();
+      } else if (char === "Backspace") {
+        term.write("\b \b");
+      } else {
+        term.write(char);
+      }
+    });
 
-    function start() {
-        const container = document.getElementById("terminal-container");
-        // Connect to socket and when it is available, start terminal.
-        
-        startTerminal(container, socket);
-    }
+    this.prompt();
+  }
 
-    useEffect(() => {
-        // Better to start on DOMContentLoaded. So, we know terminal-container is loaded
-        start();
-    }, []);
+  prompt = () => {
+    var shellprompt = "$ ";
+    term.write("\r\n" + shellprompt);
+  };
 
+  render() {
     return (
-        <div id="terminal-container"></div>
+      <div className="App" style={{ background: "" }}>
+        <h1>Xterm.js</h1>
+        <Resizable
+          width={350}
+          height={350}
+          style={{
+            background: "firebrick",
+            padding: "0.4em",
+            margin: "1em"
+          }}
+        >
+          <div id="xterm-one" style={{ height: "100%", width: "100%" }} />
+          {/* <ResizeObserver
+            onResize={rect => {
+              fitAddon.fit();
+              console.log("Resized. New bounds:", rect.width, "x", rect.height);
+            }}
+            onPosition={rect => {
+              console.log("Moved. New position:", rect.left, "x", rect.top);
+            }}
+          /> */}
+        </Resizable>
+      </div>
     );
-};
-
-export default SSHComponent;
+  }
+}
