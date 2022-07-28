@@ -56,7 +56,7 @@ const items = [
   ]),
   getItem("Files", "10", <FileDoneOutlined />),
   getItem("React Terminal", "/react-terminal", <PieChartOutlined />),
-  getItem("SSH Terminal", "/ssh", <DisconnectOutlined />),
+  getItem("SSH Terminal", "/ssh-terminal", <DisconnectOutlined />),
 ];
 
 const Template = ({ children }) => {

@@ -1,26 +1,20 @@
 import React, { useEffect, useState, useContext } from "react";
 import {
   Button,
-  Form,
-  Input,
-  message,
   Col,
   Row,
   Space,
-  Collapse,
-  Select,
   Card,
 } from "antd";
 import { CodeOutlined, EditOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 
-export default function Connections() {
+const Connections = (props) => {
+  // Props
+  const {clickedFrom} = props;
+
   // States
   const [connections, setConnections] = useState([]);
-
-  // Antd Constants
-  const { Panel } = Collapse;
-  const { Option } = Select;
 
   // Router
   const router = useRouter();
@@ -39,17 +33,30 @@ export default function Connections() {
     router.push(`/ssh-connection/details/${projectId}`);
   };
 
+  const openTerminal = (connectionId) => {
+    router.push(`/ssh-terminal/run/` + connectionId);
+  }
+
   const genExtra = (item) => {
-    return (
-      <Space>
-        <Button
-          href={`/ssh-connection/edit/` + item._id}
-          icon={<EditOutlined />}
-        >
-          Edit
-        </Button>
-      </Space>
-    );
+      return (
+          <Space>
+              {clickedFrom === "ssh-terminal" ? (
+                  <Button
+                      onClick={() => openTerminal(item._id)}
+                      icon={<EditOutlined />}
+                  >
+                      Run Terminal
+                  </Button>
+              ) : (
+                  <Button
+                      href={`/ssh-connection/edit/` + item._id}
+                      icon={<EditOutlined />}
+                  >
+                      Edit
+                  </Button>
+              )}
+          </Space>
+      );
   };
 
   return (
@@ -69,3 +76,5 @@ export default function Connections() {
     </Row>
   );
 }
+
+export default Connections;
