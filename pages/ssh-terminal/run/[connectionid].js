@@ -14,9 +14,6 @@ const ConnectionTerminal = (props) => {
     // Props
     const { stepResults, socket, socketConnected } = props;
 
-    console.log('props: ', props);
-    
-
     // States
     const [connectionData, setConnectionData] = useState(null);
     const [error, setError] = useState(null);
