@@ -5,6 +5,7 @@ import os from 'os';
 let io;
 const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
 let socketCopy = null;
+let termCommand = "";
 
 const ptyProcess = pty.spawn(shell, [], {
     name: 'xterm-color',
@@ -16,7 +17,7 @@ const ptyProcess = pty.spawn(shell, [], {
 
 ptyProcess.on('data', function(data) {
     if(socketCopy) {
-        socketCopy.emit("command-output", {status: 'success', command: 'test', output: data});
+        socketCopy.emit("command-output", {status: 'success', command: termCommand, output: data});
     }
 });
 
@@ -58,6 +59,7 @@ const SocketHandler = (req, res) => {
                 console.log("term-input socket on: ", command);
                 // Assign socket to socketCopy variable for access into ptyProcess
                 socketCopy = socket;
+                termCommand = command;
                 ptyProcess.write(`${command}\r`);
             });
         });

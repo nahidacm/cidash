@@ -18,14 +18,25 @@ const TerminalComponent = (props) => {
         if (socketConnected) {
           socket.on("connect", () => {
             console.log("connected in xterm");
-            // socket.emit("term-input", "ls\r"); 
+            socket.emit("term-input", "ssh nahid@192.168.69.229\r"); 
           });
     
           socket.on("command-output", (msg) => {
             console.log("command-output xterm: ", msg);
-            if(msg) {
-                write(msg?.output);
-                commandLine = "";
+            if (msg) {
+                if (
+                    msg?.command === "ssh nahid@192.168.69.229\r" &&
+                    msg?.status === "success" &&
+                    msg?.output === "\rnahid@192.168.69.229's password: "
+                ) {
+                    socket.emit("term-input", "j\r");
+                    commandLine = "";
+                } else {
+                    write(msg?.output);
+                    commandLine = "";
+                }
+                // write(msg?.output);
+                // commandLine = "";
             }
           });
         }
