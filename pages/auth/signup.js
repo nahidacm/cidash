@@ -31,6 +31,9 @@ export default function SignupPage() {
       body: JSON.stringify(body),
     });
 
+    // console.log('res: ', res.json());
+    
+
 
     if (res.status === 201) {
       console.log('gese');

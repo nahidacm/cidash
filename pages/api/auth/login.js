@@ -4,7 +4,11 @@ import passport from '../../../lib/passport';
 
 const handler = nextConnect()
 
-handler.use(auth).post(passport.authenticate('local'), (req, res) => {
+handler
+.use(auth)
+.post(passport.authenticate('local'), (req, res) => {
+  console.log('req in post: ', req);
+  
   res.json({ user: req.user })
 })
 

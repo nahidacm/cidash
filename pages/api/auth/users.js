@@ -36,8 +36,7 @@ handler
     createUser(req, user)
     .then((result) => {
       if(result?.success) {
-        console.log('result after succ l: ', result);
-        return res.status(201).json({ message: "Data inserted successfully!" });
+        return res.status(201).json({ message: "Data inserted successfully!", user: user });
       }
     })
     .catch((error) => {
