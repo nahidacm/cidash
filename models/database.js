@@ -2,7 +2,7 @@ import { MongoClient } from "mongodb";
 
 // Connection URL
 const url =
-  "mongodb://admin:localadminpass@localhost:27017/cidash?authSource=admin&readPreference=primary&ssl=false";
+  "mongodb://root:example@localhost:27017/";
 const client = new MongoClient(url);
 
 // Database Name
